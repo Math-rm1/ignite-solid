@@ -1,0 +1,277 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SOLID Challenge Documentation",
+    "description": "This is a SOLID Challenge API",
+    "version": "1.0.0",
+    "contact": {
+      "email": "matheus.r.mariano@hotmail.com"
+    }
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List all users",
+        "parameters": [{
+          "in": "header",
+          "name": "user_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": "true"
+        }],        
+        "description": "Only admin can access",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "example": [
+                    {
+                      "admin": false,
+                      "id": "b0744db5-f351-45a1-82a1-516776870071",
+                      "name": "Matheus",
+                      "email": "matheus.r.mariano@hotmail.com",
+                      "created_at": "2022-09-05T15:29:24.436Z",
+                      "updated_at": "2022-09-06T20:29:24.436Z"                    
+                  }, {
+                      "admin": true,
+                      "id": "deb4e04c-3318-496d-a0ab-2b7337f1d8be",
+                      "name": "John Doe",
+                      "email": "john.doe@gmail.com",
+                      "created_at": "2022-09-05T17:46:32.556Z",
+                      "updated_at": "2022-09-06T19:22:21.438Z"                    
+                  }]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "error": "User is not an admin"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Creates a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "name": "Matheus",
+                "email": "matheus.r.mariano@hotmail.com"
+              }
+            }          
+          }
+         
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "admin": false,
+                  "id": "b0744db5-f351-45a1-82a1-516776870071",
+                  "name": "Matheus",
+                  "email": "matheus.r.mariano@hotmail.com",
+                  "created_at": "2022-09-05T18:29:24.436Z",
+                  "updated_at": "2022-09-05T20:29:24.436Z"               
+                }  
+              }
+            }
+          },
+          "400": {
+            "description": "Email is already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }                  
+                },
+                "example": {
+                  "error": "Email matheus.r.mariano@hotmail.com is already taken"
+                }
+              }
+            }
+          }      
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Returns a specific user",
+        "parameters": [{
+          "in": "path",
+          "name": "user_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": "true"
+        }],    
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "admin": false,
+                  "id": "b0744db5-f351-45a1-82a1-516776870071",
+                  "name": "Matheus",
+                  "email": "matheus.r.mariano@hotmail.com",
+                  "created_at": "2022-09-05T18:29:24.436Z",
+                  "updated_at": "2022-09-05T20:29:24.436Z"               
+                }  
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "error": "User with id b0744db5-f351-45a1-82a1-516776870071 not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/admin": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Turn user into admin",
+        "parameters": [{
+          "in": "path",
+          "name": "user_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": "true"
+        }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { 
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "admin": true,
+                  "id": "b0744db5-f351-45a1-82a1-516776870071",
+                  "name": "Matheus",
+                  "email": "matheus.r.mariano@hotmail.com",
+                  "created_at": "2022-09-05T15:29:24.436Z",
+                  "updated_at": "2022-09-06T20:29:24.436Z"                    
+                }          
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "error": "User with id b0744db5-f351-45a1-82a1-516776870071 not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ,
+  "components": {
+    "schemas": {
+      "User": {      
+        "type": "object",
+        "properties": {
+          "admin": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }      
+      }
+    }
+  }
+}
